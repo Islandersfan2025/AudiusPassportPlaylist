@@ -1,0 +1,16 @@
+# The Track entity represents a song indexed from the Audius network
+type Track @entity {
+  id: ID! # The Audius Track ID (e.g., 'D7KyD')
+  title: String! @index
+  artistHandle: String! @index
+  genre: String @index
+  mood: String
+  blockHeight: BigInt! # To track when it was indexed
+  createdAt: Date!
+}
+
+# Optional: To filter tracks by a specific user or "Playlist" logic
+type Artist @entity {
+  id: ID! # Artist handle
+  tracks: [Track] @derivedFrom(field: "artistHandle")
+}

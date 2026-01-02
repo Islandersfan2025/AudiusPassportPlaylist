@@ -1,0 +1,38 @@
+specVersion: 1.0.0
+name: audius-track-indexer
+version: 0.0.1
+runner:
+  node:
+    name: "@subql/node"
+    version: "*"
+  query:
+    name: "@subql/query"
+    version: "*"
+description: >-
+  This project indexes Audius tracks to allow for fast filtering of playlists.
+repository: "https://github.com/your-repo/audius-subquery"
+
+schema:
+  file: ./schema.graphql
+
+network:
+  # Audius uses a high-performance Ethereum-compatible sidechain
+  chainId: "0x63" # Example: POA Network / Audius Sidechain ID
+  endpoint: "https://discoveryprovider.audius.co/rpc" 
+
+dataSources:
+  - kind: ethereum/Runtime
+    startBlock: 1000000 # Adjust to when the contract was deployed
+    options:
+      # Address of the Audius Track Storage/Registry contract
+      address: "0x546497888624468dae5404f19b1F707528938c9D"
+      abi: TrackContract
+    mapping:
+      file: ./src/mappings/mappingHandlers.ts
+      handlers:
+        - handler: handleNewTrack
+          kind: ethereum/LogHandler
+          filter:
+            ## This event name is based on the Audius Track smart contract
+            topics:
+              - TrackUploaded(uint256 indexed trackId, string title, string genre)
